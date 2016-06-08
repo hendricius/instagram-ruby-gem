@@ -77,6 +77,23 @@ module Instagram
         response = get('media/search', options.merge(:lat => lat, :lng => lng))
         response
       end
+
+      # Returns the embed code for a given media url
+      #
+      # @param url [String] url of the instagram medium.
+      # @param options [Hash] A customizable set of options.
+      # @example Return embed code for url http://instagr.am/p/fA9uwTtkSN/
+      #   Instagram.media_embed_code("http://instagr.am/p/fA9uwTtkSN/", {})
+      # @see https://www.instagram.com/developer/embedding/#oembed
+      # @format :json
+      # @authenticated false
+      # @rate_limited true
+      def media_oembed(url, options={})
+        request_options    = {api_endpoint: "https://api.instagram.com/"}
+        send_options       = options.merge(request_options).merge({url: url})
+        response           = get('oembed/', send_options, false, false, true, false, false)
+        response
+      end
     end
   end
 end
