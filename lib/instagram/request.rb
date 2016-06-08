@@ -28,9 +28,12 @@ module Instagram
 
     # Perform an HTTP request
     def request(method, path, options, signature=false, raw=false, unformatted=false, no_response_wrapper=false, signed=sign_requests)
-      response = connection(raw).send(method) do |request|
+      per_request_options       = {}
+      per_request_options[:url] = options[:api_endpoint] if options[:api_endpoint]
+      options                   = options.except(:api_endpoint)
+      response = connection(raw, per_request_options: per_request_options).send(method) do |request|
         path = formatted_path(path) unless unformatted
-        
+
         if signed == true
           if client_id != nil
             sig_options = options.merge({:client_id => client_id})
@@ -41,7 +44,7 @@ module Instagram
           sig = generate_sig("/"+path, sig_options, client_secret)
           options[:sig] = sig
         end
-        
+
         case method
         when :get, :delete
           request.url(URI.encode(path), options)
